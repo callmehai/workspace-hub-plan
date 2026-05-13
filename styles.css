@@ -2061,6 +2061,82 @@ section > h2 {
 }
 .hint .icon { color: var(--primary); margin-top: .12rem; }
 
+/* ============ Floating buttons stack ============ */
+.float-stack {
+  position: fixed;
+  right: 1.5rem;
+  bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: .55rem;
+  z-index: 50;
+  align-items: flex-end;
+}
+.float-proto-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: .75rem;
+  background: linear-gradient(135deg, #6366F1 0%, #4F46E5 100%);
+  color: white;
+  text-decoration: none;
+  padding: .85rem 1.3rem;
+  border-radius: 999px;
+  box-shadow: 0 8px 24px rgba(79, 70, 229, .35), 0 2px 6px rgba(15, 23, 42, .12);
+  transition: transform .18s cubic-bezier(.4, 0, .2, 1), box-shadow .18s;
+  font-size: .9rem;
+}
+.float-proto-btn.variant-timeline {
+  background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+  box-shadow: 0 8px 24px rgba(5, 150, 105, .32), 0 2px 6px rgba(15, 23, 42, .12);
+}
+.float-proto-btn.variant-timeline:hover {
+  box-shadow: 0 14px 32px rgba(5, 150, 105, .42), 0 4px 8px rgba(15, 23, 42, .16);
+}
+.float-proto-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 32px rgba(79, 70, 229, .45), 0 4px 8px rgba(15, 23, 42, .16);
+}
+.float-proto-btn:active { transform: translateY(0); }
+.float-proto-icon {
+  width: 32px;
+  height: 32px;
+  background: rgba(255, 255, 255, .2);
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: .85rem;
+  flex-shrink: 0;
+}
+.float-proto-label {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+  font-size: .9rem;
+}
+.float-proto-label strong {
+  font-weight: 600;
+  letter-spacing: -.01em;
+}
+.float-proto-sub {
+  font-size: .7rem;
+  opacity: .85;
+  margin-top: .1rem;
+}
+
+@media (max-width: 600px) {
+  .float-stack {
+    right: 1rem;
+    bottom: 1rem;
+    gap: .4rem;
+  }
+  .float-proto-btn {
+    padding: .65rem .95rem;
+    font-size: .85rem;
+  }
+  .float-proto-sub { display: none; }
+}
+
 /* ============ Authorization concept block ============ */
 .concept-sub {
   font-size: 1.05rem;
