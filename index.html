@@ -20,7 +20,6 @@
       </p>
       <div class="hero-stats">
         <div><strong>10</strong><span>tuần</span></div>
-        <div><strong>15</strong><span>bảng DB</span></div>
         <div><strong>7</strong><span>integration</span></div>
         <div><strong>3</strong><span>OAuth provider</span></div>
         <div><strong>2</strong><span>role + share</span></div>
@@ -858,7 +857,7 @@ Trân trọng,
       </div>
 
       <h3 class="mockup-title">3.7. Admin Dashboard — chỉ user có role <code>Admin</code> mới vào được</h3>
-      <p class="lead-small">Admin login → sidebar có thêm mục <strong>Admin</strong> → vào trang quản trị: bảng user, stats sync, action lock/unlock + force-disconnect. Nếu User thường gõ URL <code>/admin</code> sẽ bị middleware reject 403.</p>
+      <p class="lead-small">Admin login → sidebar có thêm mục <strong>Admin</strong> → 3 tab: <strong>Users</strong>, <strong>Integrations</strong> (catalog provider), <strong>Logs</strong>. Nếu User thường gõ URL <code>/admin</code> sẽ bị middleware reject 403.</p>
       <div class="mockup-admin">
         <div class="adm-topbar">
           <div class="adm-title">
@@ -870,6 +869,13 @@ Trân trọng,
             <span class="badge-mini imp">42 users</span>
             <span class="badge-mini">8 locked</span>
           </div>
+        </div>
+
+        <div class="adm-tabs">
+          <span class="adm-tab active">Users</span>
+          <span class="adm-tab">Integrations <span class="adm-tab-count">3</span></span>
+          <span class="adm-tab">Webhook logs</span>
+          <span class="adm-tab">Audit</span>
         </div>
 
         <div class="adm-stats">
@@ -1014,10 +1020,262 @@ Trân trọng,
           </table>
         </div>
 
+        <div class="adm-table-wrap" style="margin-top:1.2rem;">
+          <div class="adm-table-h">
+            <strong>Manage Integrations</strong> <span class="adm-sub" style="margin-left:.4rem;">— catalog provider hệ thống hỗ trợ</span>
+            <button class="btn-mini" style="margin-left:auto;">+ Add Integration</button>
+          </div>
+          <table class="adm-table">
+            <thead>
+              <tr>
+                <th>Integration</th>
+                <th>Key</th>
+                <th>Provider</th>
+                <th>Services</th>
+                <th>Client ID</th>
+                <th>Connections</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <div class="adm-user-cell">
+                    <span class="nx-int-icon google" style="width:28px;height:28px;font-size:.8rem;">G</span>
+                    <strong>Google Workspace</strong>
+                  </div>
+                </td>
+                <td><code>google</code></td>
+                <td>Google</td>
+                <td><span class="adm-int-chip">Gmail</span><span class="adm-int-chip">GCal</span><span class="adm-int-chip">Drive</span></td>
+                <td class="adm-cid">••••••••.apps.googleusercontent.com</td>
+                <td>28</td>
+                <td><span class="adm-status ok">Enabled</span></td>
+                <td>
+                  <span class="adm-act">Edit</span>
+                  <span class="adm-act">Rotate secret</span>
+                  <span class="adm-act danger">Disable</span>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="adm-user-cell">
+                    <span class="nx-int-icon microsoft" style="width:28px;height:28px;font-size:.8rem;">M</span>
+                    <strong>Microsoft 365</strong>
+                  </div>
+                </td>
+                <td><code>microsoft</code></td>
+                <td>Microsoft</td>
+                <td><span class="adm-int-chip">Outlook</span><span class="adm-int-chip">OutlookCal</span><span class="adm-int-chip">OneDrive</span></td>
+                <td class="adm-cid">••••••••-aaaa-bbbb-cccc-dddddddddddd</td>
+                <td>14</td>
+                <td><span class="adm-status ok">Enabled</span></td>
+                <td>
+                  <span class="adm-act">Edit</span>
+                  <span class="adm-act">Rotate secret</span>
+                  <span class="adm-act danger">Disable</span>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="adm-user-cell">
+                    <span class="nx-int-icon atlassian" style="width:28px;height:28px;font-size:.8rem;">A</span>
+                    <strong>Atlassian Jira</strong>
+                  </div>
+                </td>
+                <td><code>atlassian</code></td>
+                <td>Atlassian</td>
+                <td><span class="adm-int-chip">Jira</span></td>
+                <td class="adm-cid">••••••••-2222-3333-4444-555555555555</td>
+                <td>7</td>
+                <td><span class="adm-status warn">Sandbox</span></td>
+                <td>
+                  <span class="adm-act">Edit</span>
+                  <span class="adm-act">Rotate secret</span>
+                  <span class="adm-act danger">Disable</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
         <p class="adm-foot-note">
           <strong>Admin không xem nội dung email/file của user.</strong>
           Action "View detail" chỉ hiện danh sách Folder + số Item per source — không hiện body. Khi user kêu "Gmail sync hỏng", Admin chỉ thấy <em>"sync attempt 5 phút trước, status 401 unauthorized"</em> và có thể force-disconnect để user re-auth.
         </p>
+        <p class="adm-foot-note">
+          <strong>Add Integration:</strong> Admin nhập Key + DisplayName + Provider + Authorization/Token Endpoint + Client ID/Secret + Default Scopes → BE INSERT 1 row bảng <code>Integrations</code>. Provider mới hiện ngay trên trang <code>/integrations</code> của user — không cần redeploy.
+          <br><strong>Disable:</strong> set <code>IsEnabled=false</code>. User mới không connect được, OAuthConnection cũ vẫn dùng (token vẫn refresh) cho tới khi Admin force-disconnect.
+        </p>
+      </div>
+
+      <h3 class="mockup-title">3.8. Integrations &amp; Connections — 2 trang riêng kiểu Nango</h3>
+      <p class="lead-small">Sidebar có <strong>2 mục riêng</strong>: <code>/integrations</code> (catalog provider — chọn để connect) và <code>/connections</code> (OAuth grant của tôi — manage token + sub-service). Mental model giống Nango: <em>Integration = blueprint, Connection = grant</em>.</p>
+
+      <div class="nx-shell">
+        <div class="nx-sidebar">
+          <div class="nx-side-section">WORKSPACE</div>
+          <div class="nx-side-item"><span class="nx-side-icon">📥</span>Inbox</div>
+          <div class="nx-side-item"><span class="nx-side-icon">📁</span>Folders</div>
+          <div class="nx-side-item"><span class="nx-side-icon">⭐</span>Important</div>
+          <div class="nx-side-section">SETUP</div>
+          <div class="nx-side-item nx-active"><span class="nx-side-icon">⊞</span>Integrations<span class="nx-side-count">3</span></div>
+          <div class="nx-side-item"><span class="nx-side-icon">🔌</span>Connections<span class="nx-side-count">2</span></div>
+          <div class="nx-side-item"><span class="nx-side-icon">✈</span>Telegram</div>
+          <div class="nx-side-section">ACCOUNT</div>
+          <div class="nx-side-item"><span class="nx-side-icon">👤</span>Profile</div>
+          <div class="nx-side-item"><span class="nx-side-icon">🔔</span>Notifications</div>
+        </div>
+
+        <div class="nx-main">
+          <div class="nx-page-header">
+            <div>
+              <h4 class="nx-page-title">Integrations</h4>
+              <p class="nx-page-sub">Catalog các provider app hỗ trợ. Click <em>Connect</em> để OAuth.</p>
+            </div>
+            <div class="nx-page-actions">
+              <input class="nx-search" placeholder="Tìm integration..." />
+            </div>
+          </div>
+
+          <div class="nx-int-grid">
+            <div class="nx-int-card connected">
+              <div class="nx-int-head">
+                <span class="nx-int-icon google">G</span>
+                <div class="nx-int-titles">
+                  <strong>Google Workspace</strong>
+                  <span class="nx-int-key">key: <code>google</code></span>
+                </div>
+                <span class="nx-int-badge connected">Connected</span>
+              </div>
+              <p class="nx-int-desc">Gmail · Google Calendar · Google Drive — 1 OAuth flow, bật/tắt service riêng trong Connection.</p>
+              <div class="nx-int-services">
+                <span class="nx-svc-chip">Gmail</span>
+                <span class="nx-svc-chip">GCal</span>
+                <span class="nx-svc-chip">Drive</span>
+              </div>
+              <div class="nx-int-foot">
+                <span class="nx-int-stat">1 connection</span>
+                <button class="btn-mini">Manage</button>
+              </div>
+            </div>
+
+            <div class="nx-int-card">
+              <div class="nx-int-head">
+                <span class="nx-int-icon microsoft">M</span>
+                <div class="nx-int-titles">
+                  <strong>Microsoft 365</strong>
+                  <span class="nx-int-key">key: <code>microsoft</code></span>
+                </div>
+                <span class="nx-int-badge available">Available</span>
+              </div>
+              <p class="nx-int-desc">Outlook Mail · Outlook Calendar · OneDrive — refresh_token rotate, BE handle tự động.</p>
+              <div class="nx-int-services">
+                <span class="nx-svc-chip">Outlook</span>
+                <span class="nx-svc-chip">OutlookCal</span>
+                <span class="nx-svc-chip">OneDrive</span>
+              </div>
+              <div class="nx-int-foot">
+                <span class="nx-int-stat">0 connection</span>
+                <button class="btn-primary nx-connect-btn">+ Connect</button>
+              </div>
+            </div>
+
+            <div class="nx-int-card connected">
+              <div class="nx-int-head">
+                <span class="nx-int-icon atlassian">A</span>
+                <div class="nx-int-titles">
+                  <strong>Atlassian Jira</strong>
+                  <span class="nx-int-key">key: <code>atlassian</code></span>
+                </div>
+                <span class="nx-int-badge connected">Connected</span>
+              </div>
+              <p class="nx-int-desc">Jira Cloud — sync issue được assign cho mình thành Item type Ticket.</p>
+              <div class="nx-int-services">
+                <span class="nx-svc-chip">Jira</span>
+              </div>
+              <div class="nx-int-foot">
+                <span class="nx-int-stat">1 connection</span>
+                <button class="btn-mini">Manage</button>
+              </div>
+            </div>
+
+            <div class="nx-int-card disabled">
+              <div class="nx-int-head">
+                <span class="nx-int-icon placeholder">+</span>
+                <div class="nx-int-titles">
+                  <strong>Add new integration</strong>
+                  <span class="nx-int-key nx-admin-only">Admin only</span>
+                </div>
+              </div>
+              <p class="nx-int-desc">Admin có thể thêm provider mới qua trang Manage Integrations — không cần redeploy.</p>
+            </div>
+          </div>
+
+          <div class="nx-page-header" style="margin-top:2rem;">
+            <div>
+              <h4 class="nx-page-title">Connections <span class="nx-side-count" style="position:static;margin-left:.5rem;">2</span></h4>
+              <p class="nx-page-sub">OAuth grant của bạn. Expand 1 row để bật/tắt sub-service.</p>
+            </div>
+          </div>
+
+          <div class="nx-conn-list">
+            <div class="nx-conn-row expanded">
+              <div class="nx-conn-summary">
+                <span class="nx-int-icon google">G</span>
+                <div class="nx-conn-info">
+                  <strong>vy.cuong@gmail.com</strong>
+                  <div class="nx-conn-sub"><code>google</code> · scopes: <code>gmail.readonly calendar.readonly drive.readonly</code></div>
+                </div>
+                <span class="nx-conn-meta">Last sync 2p trước</span>
+                <span class="nx-int-badge connected">Active</span>
+                <span class="nx-conn-chevron">▾</span>
+              </div>
+              <div class="nx-conn-detail">
+                <div class="nx-svc-toggles">
+                  <div class="nx-svc-toggle on">
+                    <div class="nx-svc-name"><span class="nx-svc-dot on"></span>Gmail</div>
+                    <div class="nx-svc-info">Last synced 2p trước · 84 items synced today</div>
+                    <span class="nx-toggle on">●</span>
+                  </div>
+                  <div class="nx-svc-toggle on">
+                    <div class="nx-svc-name"><span class="nx-svc-dot on"></span>Google Calendar</div>
+                    <div class="nx-svc-info">Last synced 5p trước · 12 events synced today</div>
+                    <span class="nx-toggle on">●</span>
+                  </div>
+                  <div class="nx-svc-toggle off">
+                    <div class="nx-svc-name"><span class="nx-svc-dot off"></span>Google Drive</div>
+                    <div class="nx-svc-info">Đã tắt bởi user · không sync</div>
+                    <span class="nx-toggle off">●</span>
+                  </div>
+                </div>
+                <div class="nx-conn-actions">
+                  <button class="btn-mini">Refresh token</button>
+                  <button class="btn-mini">View raw tokens (Admin)</button>
+                  <button class="btn-mini danger">Disconnect</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="nx-conn-row">
+              <div class="nx-conn-summary">
+                <span class="nx-int-icon atlassian">A</span>
+                <div class="nx-conn-info">
+                  <strong>vy.cuong@workspacehub.app</strong>
+                  <div class="nx-conn-sub"><code>atlassian</code> · scopes: <code>read:jira-work offline_access</code></div>
+                </div>
+                <span class="nx-conn-meta">Last sync 1h trước</span>
+                <span class="nx-int-badge error">Error</span>
+                <span class="nx-conn-chevron">▸</span>
+              </div>
+            </div>
+          </div>
+
+          <p class="hint" style="margin-top:1rem;">
+            <strong>Tại sao tách 2 trang?</strong> <em>Integrations</em> = "app có support cái gì" (catalog static). <em>Connections</em> = "tôi đã connect cái gì" (data per user). Giống Nango — Admin quản trị Integrations (CRUD provider + client_id/secret), User chỉ thấy Connections của mình.
+          </p>
+        </div>
       </div>
 
     </section>
@@ -1291,35 +1549,6 @@ Trân trọng,
         </div>
       </div>
 
-      <h3>6.2. Database — 15 bảng</h3>
-      <div class="db-table">
-        <table>
-          <thead>
-            <tr><th>Bảng</th><th>Mục đích</th><th>Quan hệ chính</th></tr>
-          </thead>
-          <tbody>
-            <tr><td><code>User</code></td><td>Tài khoản (email, password_hash, default_timezone, <strong>is_locked</strong>, locked_reason)</td><td>1-n nhiều bảng · m-n Role</td></tr>
-            <tr><td><code>Role</code> <span class="badge-new">AUTH</span></td><td>Vai trò hệ thống (name: <code>Admin</code>/<code>User</code>, description). Seed 2 record qua migration đầu</td><td>m-n User qua UserRole</td></tr>
-            <tr><td><code>UserRole</code> <span class="badge-new">AUTH</span></td><td>Junction User-Role (user_id, role_id, assigned_at). 1 user có thể nhiều role nhưng MVP chỉ gán 1</td><td>m-n</td></tr>
-            <tr><td><code>IntegrationAccount</code></td><td>Mỗi connect OAuth (provider: <code>google</code>/<code>microsoft</code>/<code>atlassian</code>, <code>nango_connection_id</code>, account_email)</td><td>thuộc 1 User · 1-n ServiceConnection</td></tr>
-            <tr><td><code>ServiceConnection</code></td><td>Bật/tắt từng service trong 1 account (<code>service_type</code>: gmail/gcal/gdrive/outlook/outlook_cal/onedrive/jira, <code>is_enabled</code>, last_synced_at, <strong>last_error</strong>)</td><td>thuộc 1 IntegrationAccount</td></tr>
-            <tr><td><code>Item</code></td><td>Card đại diện 5 type (type, source, source_id, title, snippet, due_date, status, is_important, mime_type, web_url, preview_url)</td><td>thuộc 1 User · m-n Folder · m-n Tag</td></tr>
-            <tr><td><code>Folder</code></td><td>Container theo context (name, color, icon, <strong>is_shared</strong>)</td><td>thuộc 1 User (owner) · m-n Item · 1-n FolderShare</td></tr>
-            <tr><td><code>ItemFolder</code></td><td>Junction Item-Folder + <code>position</code> cho drag order</td><td>m-n</td></tr>
-            <tr><td><code>FolderShare</code> <span class="badge-new">AUTH</span></td><td>Chia sẻ folder cho user khác (folder_id, shared_with_user_id, permission: <code>Viewer</code>, invited_at, accepted_at). MVP chỉ có Viewer; Editor để mở rộng sau</td><td>thuộc 1 Folder · thuộc 1 User được mời</td></tr>
-            <tr><td><code>Tag</code></td><td>Tag custom (name, color)</td><td>thuộc 1 User · m-n Item</td></tr>
-            <tr><td><code>TagAssignment</code></td><td>Junction Tag-Item</td><td>m-n</td></tr>
-            <tr><td><code>ImportantContact</code></td><td>Email/Jira reporter quan trọng (identifier, type: email/jira_account, label)</td><td>thuộc 1 User</td></tr>
-            <tr><td><code>ScheduledEmail</code></td><td>Email lên lịch (to, subject, body, send_at, status, retry_count, error, sent_via: gmail/outlook)</td><td>thuộc 1 User · 1 IntegrationAccount</td></tr>
-            <tr><td><code>Notification</code></td><td>Thông báo in-app (title, body, type, link, is_read). Loại <code>share_invite</code> dùng cho mời share folder</td><td>thuộc 1 User</td></tr>
-            <tr><td><code>TelegramBinding</code></td><td>Liên kết user với bot riêng (bot_token_encrypted, chat_id, link_token, is_active)</td><td>thuộc 1 User</td></tr>
-          </tbody>
-        </table>
-        <p class="muted" style="margin-top:.8rem">
-          <strong>Index quan trọng cho phân quyền:</strong>
-          <code>UNIQUE(user_id, role_id)</code> trên UserRole · <code>UNIQUE(folder_id, shared_with_user_id)</code> trên FolderShare (1 user 1 quyền per folder) · index <code>shared_with_user_id</code> để query "Shared with me" nhanh.
-        </p>
-      </div>
 
       <h3>6.3. Communication flow</h3>
       <div class="flow-diagram">
